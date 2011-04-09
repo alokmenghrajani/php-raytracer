@@ -1,11 +1,11 @@
-= What is php-raytracer?
+= What is php-raytracer? =
 This is a ray tracing software written in PHP. It's pretty much pointless, I just wrote it "for the lolz".
 
-= What is a ray tracer?
+= What is a ray tracer? =
 A ray tracer is a piece of software which generate 3D images by simulating the physics of light. The result
 is a very realistic 3D image.
 
-= Why write just pointless code?
+= Why write just pointless code? =
 I one day decided to share various pieces of functional code (dubbed "for the lolz"). These pieces of code
 are meant to illustrate fundamental computer science concepts, so someone looking at this code might learn
 something useful.
