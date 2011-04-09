@@ -34,11 +34,18 @@ class World {
   protected $lights = array();
   protected $objects = array();
 
+  // Sets the camera for the world. Each world should
+  // have exactly one camera before rendering can happen
   public function setCamera(Camera $camera) {
+    if ($this->camera) {
+      throw new Exception('Camera already set');
+    }
     $this->camera = $camera;
     return $this;
   }
 
+  // Adds a light source to the world. A world should have
+  // one or more lights.
   public function addLight(Light $light) {
     $this->lights[] = $light;
     return $this;
@@ -58,6 +65,12 @@ class World {
   }
 
   public function render($file, $width=400, $height=225) {
+    if (!$this->camera) {
+      throw new Exception('You need to set a Camera');
+    }
+    if (!$this->lights) {
+      throw new Exception('You need one or more Lights');
+    }
     $img = new Image($file, $width, $height);
 
     $camera_z = clone $this->camera->getDirection();
