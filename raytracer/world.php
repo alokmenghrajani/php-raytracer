@@ -29,10 +29,21 @@
 
 ini_set('memory_limit', '2000M');
 
+/**
+ * The World object. This object is a basically a container. It doesn't
+ * do much, beside tie everything together.
+ *
+ * A World is composed of:
+ * - exactly one camera
+ * - one or more lights
+ * - zero or more objects
+ * - exactly one rendering engine
+ */
 class World {
   protected $camera = null;
   protected $lights = array();
   protected $objects = array();
+  protected $renderer = null;
 
   // Sets the camera for the world. Each world should
   // have exactly one camera before rendering can happen
@@ -41,6 +52,18 @@ class World {
       throw new Exception('Camera already set');
     }
     $this->camera = $camera;
+    return $this;
+  }
+
+  public function getCamera() {
+    return $this->camera;
+  }
+
+  public function setRenderer(Renderer $renderer) {
+    if ($this->renderer) {
+      throw new Exception('Renderer already set');
+    }
+    $this->renderer = $renderer;
     return $this;
   }
 
@@ -71,38 +94,12 @@ class World {
     if (!$this->lights) {
       throw new Exception('You need one or more Lights');
     }
-    $img = new Image($file, $width, $height);
-
-    $camera_z = clone $this->camera->getDirection();
-    $camera_z->K_mul($width / 2 / tan($this->camera->getAngle()));
-
-    // Cast rays, ($i, $j) is screen coordinates
-    for ($j = 0; $j < $height; $j++) {
-      for ($i = 0; $i < $width; $i++) {
-        // Rays start at <camera> and go to
-        // (d * <direction>) + (i - width/2) * <right>) + (+height/2 - j) * up
-        $r = clone $camera_z;
-
-        $t = clone $this->camera->getRight();
-        $t->K_mul($i - $width / 2);
-        $r->V_add($t);
-
-        $t = clone $this->camera->getUp();
-        $t->K_mul($height / 2 - $j);
-        $r->V_add($t);
-
-        $ray = new Ray();
-        $ray->setOrigin($this->camera->getPosition());
-        $ray->setDirection($r);
-
-        // Calculate color of way
-        foreach ($this->objects as $obj) {
-          $obj->intersect($ray, $this, 1);
-        }
-
-        $img->setPixel($i, $j, $ray->getColor());
-      }
+    if (!$this->renderer) {
+      throw new Exception('You need to set a Renderer');
     }
+
+    $img = new Image($file, $width, $height);
+    $this->renderer->render($this, $img, $width, $height);
     $img->writeFile();
   }
 }

@@ -27,42 +27,6 @@
  * or implied, of the author.
  */
 
-/**
- * A simple world, with 2 spheres and a plane.
- */
-
-include_once('raytracer/includes.php');
-
-$camera = id(new Camera())
-  ->setPosition(new Vector(10, 30, -100))
-  ->setLookAt(new Vector(0, 10, 0));
-
-$light = id(new DefaultLight())
-  ->setPosition(new Vector(100, 100, -100));
-
-$sphere = id(new Sphere())
-  ->setPosition(new Vector(0, 0, 0))
-  ->setRadius(10)
-  ->setColor(Color::$red);
-
-$sphere2 = id(new Sphere())
-  ->setPosition(new Vector(0, 18, 0))
-  ->setRadius(10)
-  ->setColor(Color::$green);
-
-$plane = id(new Plane())
-  ->setPosition(new Vector(0, -10, 0))
-  ->setNormal(new Vector(0, 1, 0))
-  ->setColor(Color::$blue);
-
-$renderer = new DiffuseRenderer();
-
-$world = id(new World())
-  ->setCamera($camera)
-  ->addObject($sphere)
-  ->addObject($sphere2)
-  ->addObject($plane)
-  ->addLight($light)
-  ->setRenderer($renderer);
-
-$world->render('images/sample_01.bmp', 400, 225);
+abstract class Renderer {
+  abstract function render(World $world, Image $img, $width, $height);
+}

@@ -27,42 +27,39 @@
  * or implied, of the author.
  */
 
-/**
- * A simple world, with 2 spheres and a plane.
- */
+class DiffuseRenderer extends Renderer {
+  function render(World $world, Image $img, $width, $height) {
+    $camera = $world->getCamera();
 
-include_once('raytracer/includes.php');
+    $camera_z = clone $camera->getDirection();
+    $camera_z->K_mul($width / 2 / tan($camera->getAngle()));
 
-$camera = id(new Camera())
-  ->setPosition(new Vector(10, 30, -100))
-  ->setLookAt(new Vector(0, 10, 0));
+    // Cast rays, ($i, $j) is screen coordinates
+    for ($j = 0; $j < $height; $j++) {
+      for ($i = 0; $i < $width; $i++) {
+        // Rays start at <camera> and go to
+        // (d * <direction>) + (i - width/2) * <right>) + (+height/2 - j) * up
+        $r = clone $camera_z;
 
-$light = id(new DefaultLight())
-  ->setPosition(new Vector(100, 100, -100));
+        $t = clone $camera->getRight();
+        $t->K_mul($i - $width / 2);
+        $r->V_add($t);
 
-$sphere = id(new Sphere())
-  ->setPosition(new Vector(0, 0, 0))
-  ->setRadius(10)
-  ->setColor(Color::$red);
+        $t = clone $camera->getUp();
+        $t->K_mul($height / 2 - $j);
+        $r->V_add($t);
 
-$sphere2 = id(new Sphere())
-  ->setPosition(new Vector(0, 18, 0))
-  ->setRadius(10)
-  ->setColor(Color::$green);
+        $ray = new Ray();
+        $ray->setOrigin($camera->getPosition());
+        $ray->setDirection($r);
 
-$plane = id(new Plane())
-  ->setPosition(new Vector(0, -10, 0))
-  ->setNormal(new Vector(0, 1, 0))
-  ->setColor(Color::$blue);
+        // Calculate color of way
+        foreach ($world->getObjects() as $obj) {
+          $obj->intersect($ray, $world, 1);
+        }
 
-$renderer = new DiffuseRenderer();
-
-$world = id(new World())
-  ->setCamera($camera)
-  ->addObject($sphere)
-  ->addObject($sphere2)
-  ->addObject($plane)
-  ->addLight($light)
-  ->setRenderer($renderer);
-
-$world->render('images/sample_01.bmp', 400, 225);
+        $img->setPixel($i, $j, $ray->getColor());
+      }
+    }
+  }
+}
