@@ -43,9 +43,9 @@ class Color extends Vector {
   }
 
   public function toInt() {
-    return (($this->x & 0xff) << 16) |
-           (($this->y & 0xff) << 8) |
-           ($this->z & 0xff);
+    return (($this->x * 255 & 0xff) << 16) |
+           (($this->y * 255 & 0xff) << 8) |
+           ($this->z * 255 & 0xff);
   }
 }
 
