@@ -8,6 +8,7 @@ What is a ray tracer?
 
 A ray tracer is a piece of software which generate 3D images by simulating the physics of light. The result
 is a very realistic 3D image.
+(e.g. https://github.com/alokmenghrajani/php-raytracer/blob/master/images/sample_01.png)
 
 If you want to read more about ray tracing, you should checkout www.povray.org (a real raytracer).
 
