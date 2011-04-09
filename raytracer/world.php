@@ -98,8 +98,12 @@ class World {
       throw new Exception('You need to set a Renderer');
     }
 
-    $img = new Image($file, $width, $height);
+    if (function_exists('gd_info')) {
+      $img = new GDEncoder($width, $height);
+    } else {
+      $img = new BMPEncoder($width, $height);
+    }
     $this->renderer->render($this, $img, $width, $height);
-    $img->writeFile();
+    $img->writeFile($file);
   }
 }

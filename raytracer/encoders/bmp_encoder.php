@@ -34,21 +34,19 @@
  * but it seems to render fine.
  */
 
-class Image {
-  protected $file;
+class BMPEncoder extends Encoder {
   protected $width;
   protected $height;
 
   protected $pixels = array();
 
-  public function __construct($file, $width, $height) {
-    $this->file = $file;
+  public function __construct($width, $height) {
     $this->width = $width;
     $this->height = $height;
 
     for ($j = 0; $j < $height; $j++) {
       for ($i = 0; $i < $width; $i++) {
-        $this->setPixel($i, $j, new Color(0, 0, $j/$height));
+        $this->setPixel($i, $j, Color::$black);
       }
     }
   }
@@ -57,8 +55,9 @@ class Image {
     $this->pixels[$x + $y * $this->width] = $color;
   }
 
-  public function writeFile() {
-    $fh = fopen($this->file, 'w');
+  public function writeFile($file) {
+    $file = $file . '.bmp';
+    $fh = fopen($file, 'w');
     if (!$fh) {
       echo 'Failed to write to ', $this->file, "\n";
       return;
@@ -103,5 +102,6 @@ class Image {
     }
 
     fclose($fh);
+    echo 'wrote ', $file, "\n";
   }
 }

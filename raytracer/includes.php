@@ -37,12 +37,16 @@ include_once('objects/object.php');
 include_once('camera.php');
 include_once('color.php');
 include_once('abstract_light.php');
-include_once('image.php');
 include_once('ray.php');
+
+// Encoders
+include_once('encoders/encoder.php');
+include_once('encoders/gd_encoder.php');
+include_once('encoders/bmp_encoder.php');
 
 // Renderer
 include_once('renderers/renderer.php');
-include_once('renderers/difuse_renderer.php');
+include_once('renderers/diffuse_renderer.php');
 
 // Lights
 include_once('default_light.php');

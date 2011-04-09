@@ -27,30 +27,14 @@
  * or implied, of the author.
  */
 
-class Color extends Vector {
-  static $white;
-  static $black;
-  static $red;
-  static $green;
-  static $blue;
-
-  public function __construct($x, $y, $z) {
-    $x = min($x, 1);
-    $y = min($y, 1);
-    $z = min($z, 1);
-
-    parent::__construct($x, $y, $z);
-  }
-
-  public function toInt() {
-    return (($this->x & 0xff) << 16) |
-           (($this->y & 0xff) << 8) |
-           ($this->z & 0xff);
-  }
+/**
+ * I have abstracted out the encoder (the piece of code which generates a bmp, png, jpg or
+ * whatever file format you want), so that things work even if GD is not installed.
+ *
+ * It is however recommended to use GD, because it's significantly faster.
+ */
+abstract class Encoder {
+  abstract function __construct($width, $height);
+  abstract function setPixel($x, $y, Color $color);
+  abstract function writeFile($file);
 }
-
-Color::$white = new Color(1, 1, 1);
-Color::$black = new Color(0, 0, 0);
-Color::$red   = new Color(1, 0, 0);
-Color::$green = new Color(0, 1, 0);
-Color::$blue  = new Color(0, 0, 1);

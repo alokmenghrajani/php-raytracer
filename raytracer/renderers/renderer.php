@@ -28,5 +28,5 @@
  */
 
 abstract class Renderer {
-  abstract function render(World $world, Image $img, $width, $height);
+  abstract function render(World $world, Encoder $img, $width, $height);
 }

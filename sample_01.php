@@ -65,4 +65,4 @@ $world = id(new World())
   ->addLight($light)
   ->setRenderer($renderer);
 
-$world->render('images/sample_01.bmp', 400, 225);
+$world->render('images/sample_01', 400, 225);

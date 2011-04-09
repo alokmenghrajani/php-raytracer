@@ -28,7 +28,7 @@
  */
 
 class DiffuseRenderer extends Renderer {
-  function render(World $world, Image $img, $width, $height) {
+  function render(World $world, Encoder $img, $width, $height) {
     $camera = $world->getCamera();
 
     $camera_z = clone $camera->getDirection();

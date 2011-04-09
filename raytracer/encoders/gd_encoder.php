@@ -27,30 +27,20 @@
  * or implied, of the author.
  */
 
-class Color extends Vector {
-  static $white;
-  static $black;
-  static $red;
-  static $green;
-  static $blue;
+class GDEncoder extends Encoder {
+  protected $img = null;
 
-  public function __construct($x, $y, $z) {
-    $x = min($x, 1);
-    $y = min($y, 1);
-    $z = min($z, 1);
-
-    parent::__construct($x, $y, $z);
+  public function __construct($width, $height) {
+    $this->img = imagecreatetruecolor($width, $height);
   }
 
-  public function toInt() {
-    return (($this->x & 0xff) << 16) |
-           (($this->y & 0xff) << 8) |
-           ($this->z & 0xff);
+  public function setPixel($x, $y, Color $color) {
+    imagesetpixel($this->img, $x, $y, $color->toInt());
+  }
+
+  public function writeFile($file) {
+    $file = $file.'.png';
+    imagepng($this->img, $file);
+    echo 'wrote ', $file, "\n";
   }
 }
-
-Color::$white = new Color(1, 1, 1);
-Color::$black = new Color(0, 0, 0);
-Color::$red   = new Color(1, 0, 0);
-Color::$green = new Color(0, 1, 0);
-Color::$blue  = new Color(0, 0, 1);
