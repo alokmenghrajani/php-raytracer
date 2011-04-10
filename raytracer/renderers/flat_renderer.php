@@ -28,9 +28,9 @@
  */
 
 /**
- * Flat rendering is very basic: each time a ray hits an object,
- * we return the object's color if it is reachable from one of the
- * light sources.
+ * Flat rendering is very similar to simple rendering. We however
+ * make sure that every ray intersection is lit. This way, the resuling
+ * image will have hard shadows.
  */
 
 class FlatRenderer extends Renderer {
@@ -59,12 +59,50 @@ class FlatRenderer extends Renderer {
         $ray->setOrigin($camera->getPosition());
         $ray->setDirection($r);
 
-        // Calculate color of ray
+        // Calculate which object this ray touches
+        $distance = null;
+        $color = Color::$black;
         foreach ($world->getObjects() as $obj) {
-          $obj->intersect($ray, $world, 1);
-        }
+          $r = $obj->intersect($ray, true, false);
+          if ($r === null) {
+            continue;
+          }
+          if (($distance === null) || ($r['d'] < $distance)) {
+            $distance = $r['d'];
+            // Cast a ray from $r['p'] to the light sources
+            $new_ray = new Ray();
+            $new_ray->setOrigin($r['p']);
+            $hits_light = false;
+            foreach ($world->getLights() as $light) {
+              $d = clone $new_ray->getOrigin();
+              $d->neg();
+              $d->V_add($light->getPosition());
+              $new_ray->setDirection($d);
 
-        $img->setPixel($i, $j, $ray->getColor());
+              // Check if this ray hits anything
+              $hits_light = true;
+              foreach ($world->getObjects() as $obj2) {
+                if ($obj2 === $obj) {
+                  continue;
+                }
+                if ($obj2->intersect($new_ray, false, false) !== null) {
+                  $hits_light = false;
+                  break;
+                }
+              }
+              if ($hits_light) {
+                break;
+              }
+            }
+
+            if ($hits_light) {
+              $color = $obj->getColor();
+            } else {
+              $color = Color::$black;
+            }
+          }
+        }
+        $img->setPixel($i, $j, $color);
       }
     }
   }

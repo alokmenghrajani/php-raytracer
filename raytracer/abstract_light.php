@@ -41,6 +41,10 @@ abstract class Light {
     return $this;
   }
 
+  public function getPosition() {
+    return $this->position;
+  }
+
   public function setColor(Color $color) {
     $this->color = $color;
     return $this;

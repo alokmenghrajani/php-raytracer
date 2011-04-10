@@ -41,22 +41,22 @@ $camera = id(new Camera())
 $light = id(new DefaultLight())
   ->setPosition(new Vector(100, 100, -100));
 
-$sphere = id(new Sphere())
+$sphere = id(new Sphere('red sphere'))
   ->setPosition(new Vector(0, 0, 0))
   ->setRadius(10)
   ->setColor(Color::$red);
 
-$sphere2 = id(new Sphere())
+$sphere2 = id(new Sphere('green sphere'))
   ->setPosition(new Vector(0, 18, 0))
   ->setRadius(10)
   ->setColor(Color::$green);
 
-$plane = id(new Plane())
+$plane = id(new Plane('floor'))
   ->setPosition(new Vector(0, -10, 0))
   ->setNormal(new Vector(0, 1, 0))
   ->setColor(Color::$blue);
 
-$renderer = new DiffuseRenderer();
+$renderer = new FlatRenderer();
 
 $world = id(new World())
   ->setCamera($camera)
@@ -66,4 +66,4 @@ $world = id(new World())
   ->addLight($light)
   ->setRenderer($renderer);
 
-$world->render('images/sample_01', 400, 225);
+$world->render('images/sample_02', 400, 225);

@@ -47,6 +47,7 @@ include_once('encoders/bmp_encoder.php');
 // Renderer
 include_once('renderers/renderer.php');
 include_once('renderers/simple_renderer.php');
+include_once('renderers/flat_renderer.php');
 include_once('renderers/diffuse_renderer.php');
 
 // Lights

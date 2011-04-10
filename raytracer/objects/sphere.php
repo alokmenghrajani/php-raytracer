@@ -43,6 +43,10 @@ class Sphere extends Object {
     }
 
     $t = -$b - sqrt($d);
+    if ($t<0) {
+      return null;
+    }
+
     $r = array('d' => $t);
 
     if ($compute_point || $compute_normal) {
