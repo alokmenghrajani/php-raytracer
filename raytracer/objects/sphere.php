@@ -68,32 +68,6 @@ class Sphere extends Object {
     return $r;
   }
 
-/*
-    $new_ray = new Ray();
-    $new_ray->setOrigin($t2);
-    foreach ($world->getLights() as $light) {
-      $d = clone $new_ray->getOrigin();
-      $d->neg();
-      $d->V_add($light->getPosition());
-      $new_ray->setDirection($d);
-
-      foreach ($world->getObjects() as $obj) {
-        if ($obj === $this) {
-          continue;
-        }
-        $obj->intersect($new_ray, $world, 2);
-        if ($new_ray->getDistance() !== null) {
-          return;
-        }
-      }
-    }
-
-    $shading = max($d->V_dot($n) / $d->length(), 0);
-    $c = clone $this->color;
-    $ray->setIntersect($t, $c->K_mul($shading));
-  }
-*/
-
   public function setRadius($r) {
     $this->radius = (float)$r;
     return $this;

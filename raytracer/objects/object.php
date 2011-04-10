@@ -65,10 +65,10 @@ abstract class Object {
    *
    * Returns null if the ray does not intersect the object. If it
    * does, we return an array(
-   * 'd' => distance from ray's origin,
-   * 'p' => point of intersection (if $compute_point is true),
-   * 'n' => normal vector (if $compute_normal is true)
-   * ).
+   *   'd' => distance from ray's origin,
+   *   'p' => point of intersection (if $compute_point is true),
+   *   'n' => normal vector (if $compute_normal is true)
+   * )
    */
   abstract function intersect(Ray $r, $compute_point, $compute_normal);
 }
