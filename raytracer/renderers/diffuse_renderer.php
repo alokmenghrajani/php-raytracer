@@ -27,6 +27,11 @@
  * or implied, of the author.
  */
 
+/**
+ * Diffuse rendering involves looking at the angle between a way and the surface's normal to calculate
+ * the amount of color to render.
+ */
+
 class DiffuseRenderer extends Renderer {
   function render(World $world, Encoder $img, $width, $height) {
     $camera = $world->getCamera();
@@ -53,12 +58,54 @@ class DiffuseRenderer extends Renderer {
         $ray->setOrigin($camera->getPosition());
         $ray->setDirection($r);
 
-        // Calculate color of ray
+        // Calculate which object this ray touches
+        $distance = null;
+        $color = Color::$black;
         foreach ($world->getObjects() as $obj) {
-          $obj->intersect($ray, $world, 1);
-        }
+          $r = $obj->intersect($ray, true, true);
+          if ($r === null) {
+            continue;
+          }
+          if (($distance === null) || ($r['d'] < $distance)) {
+            $distance = $r['d'];
+            // Cast a ray from $r['p'] to the light sources
+            $new_ray = new Ray();
+            $new_ray->setOrigin($r['p']);
 
-        $img->setPixel($i, $j, $ray->getColor());
+            $d = null;
+            $hits_light = false;
+            foreach ($world->getLights() as $light) {
+              $d = clone $new_ray->getOrigin();
+              $d->neg();
+              $d->V_add($light->getPosition());
+              $new_ray->setDirection($d);
+
+              // Check if this ray hits anything
+              $hits_light = true;
+              foreach ($world->getObjects() as $obj2) {
+                if ($obj2 === $obj) {
+                  continue;
+                }
+                if ($obj2->intersect($new_ray, false, false) !== null) {
+                  $hits_light = false;
+                  break;
+                }
+              }
+              if ($hits_light) {
+                break;
+              }
+            }
+
+            if ($hits_light) {
+              $shading = max($d->V_dot($r['n']) / $d->length(), 0);
+              $c = clone $obj->getColor();
+              $color = $c->K_mul($shading);
+            } else {
+              $color = Color::$black;
+            }
+          }
+        }
+        $img->setPixel($i, $j, $color);
       }
     }
   }

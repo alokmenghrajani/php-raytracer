@@ -43,7 +43,7 @@ class Sphere extends Object {
     }
 
     $t = -$b - sqrt($d);
-    if ($t<0) {
+    if ($t < 0) {
       return null;
     }
 
