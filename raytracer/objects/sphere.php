@@ -30,7 +30,7 @@
 class Sphere extends Object {
   protected $radius = 1;
 
-  public function intersect(Ray $ray, World $world, $iter) {
+  public function intersect(Ray $ray, $compute_point, $compute_normal) {
     // A sphere-ray intersection can happen in 0, 1 or 2 points
     $dst = clone $ray->getOrigin();
     $dst->V_sub($this->position);
@@ -39,24 +39,32 @@ class Sphere extends Object {
     $c = $dst->V_dot($dst) - $this->radius * $this->radius;
     $d = $b * $b - $c;
     if ($d < 0) {
-      return;
-    }
-
-    if ($iter == 2) {
-      return;
+      return null;
     }
 
     $t = -$b - sqrt($d);
+    $r = array('d' => $t);
 
-    // Shading
-    $n = clone $this->position;
-    $n->neg();
-    $t2 = clone $ray->getDirection();
-    $t2->K_mul($t);
-    $t2->V_add($ray->getOrigin());
-    $n->V_add($t2);
-    $n->normalize();
+    if ($compute_point || $compute_normal) {
+      $t2 = clone $ray->getDirection();
+      $t2->K_mul($t);
+      $t2->V_add($ray->getOrigin());
 
+      $r['p'] = $t2;
+    }
+
+    if ($compute_normal) {
+      $n = clone $this->position;
+      $n->neg();
+      $n->V_add($t2);
+      $n->normalize();
+
+      $r['n'] = $n;
+    }
+    return $r;
+  }
+
+/*
     $new_ray = new Ray();
     $new_ray->setOrigin($t2);
     foreach ($world->getLights() as $light) {
@@ -80,6 +88,7 @@ class Sphere extends Object {
     $c = clone $this->color;
     $ray->setIntersect($t, $c->K_mul($shading));
   }
+*/
 
   public function setRadius($r) {
     $this->radius = (float)$r;

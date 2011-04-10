@@ -27,65 +27,53 @@
  * or implied, of the author.
  */
 
-class Camera {
-  protected $position;
-  protected $direction;
-  protected $angle;
-  protected $up;
-  protected $right;
+/**
+ * Simplest form of rendering. This rendering does not take into account
+ * any shadows or lights. It simply projects rays and considers every
+ * object to be totally lit.
+ */
 
-  public function __construct() {
-    $this->position = new Vector(0, 0, 0);
+class SimpleRenderer extends Renderer {
+  function render(World $world, Encoder $img, $width, $height) {
+    $camera = $world->getCamera();
 
-    // Assume that up is always somewhere in the <0, 1, 0> <direction> plane
-    $this->up = new Vector(0, 1, 0);
+    $camera_z = clone $camera->getDirection();
+    $camera_z->K_mul($width / 2 / tan($camera->getAngle()));
 
-    $this->angle = 30 / 180 * M_PI;
-  }
+    // Cast rays, ($i, $j) is screen coordinates
+    for ($j = 0; $j < $height; $j++) {
+      for ($i = 0; $i < $width; $i++) {
+        // Rays start at <camera> and go to
+        // (d * <direction>) + (i - width/2) * <right>) + (+height/2 - j) * up
+        $r = clone $camera_z;
 
-  public function getDirection() {
-    return $this->direction;
-  }
+        $t = clone $camera->getRight();
+        $t->K_mul($i - $width / 2);
+        $r->V_add($t);
 
-  public function getAngle() {
-    return $this->angle;
-  }
+        $t = clone $camera->getUp();
+        $t->K_mul($height / 2 - $j);
+        $r->V_add($t);
 
-  public function getRight() {
-    return $this->right;
-  }
+        $ray = new Ray();
+        $ray->setOrigin($camera->getPosition());
+        $ray->setDirection($r);
 
-  public function getUp() {
-    return $this->up;
-  }
-
-  public function setPosition(Vector $v) {
-    $this->position = $v;
-    return $this;
-  }
-
-  public function getPosition() {
-    return $this->position;
-  }
-
-  public function setLookAt(Vector $v) {
-    // Compute direction (<look at> - <position>)
-    $this->direction = clone $v;
-    $this->direction->V_sub($this->position);
-
-    my_assert(!$this->direction->isNull(), 'look at == position');
-
-    // Normalize
-    $this->direction->normalize();
-
-    // Compute <right>
-    $this->right = clone $this->up;
-    $this->right->V_cross($this->direction);
-
-    // Compute the real <up>
-    $this->up = clone $this->direction;
-    $this->up->V_cross($this->right);
-
-    return $this;
+        // Calculate which object this ray touches
+        $distance = null;
+        $color = Color::$black;
+        foreach ($world->getObjects() as $obj) {
+          $r = $obj->intersect($ray, false, false);
+          if ($r === null) {
+            continue;
+          }
+          if (($distance === null) || ($r['d'] < $distance)) {
+            $distance = $r['d'];
+            $color = $obj->getColor();
+          }
+        }
+        $img->setPixel($i, $j, $color);
+      }
+    }
   }
 }

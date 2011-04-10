@@ -27,65 +27,43 @@
  * or implied, of the author.
  */
 
-class Camera {
-  protected $position;
-  protected $direction;
-  protected $angle;
-  protected $up;
-  protected $right;
+/**
+ * A simple world, with 2 spheres and a plane.
+ * Rendered using flat rendering.
+ */
 
-  public function __construct() {
-    $this->position = new Vector(0, 0, 0);
+include_once('raytracer/includes.php');
 
-    // Assume that up is always somewhere in the <0, 1, 0> <direction> plane
-    $this->up = new Vector(0, 1, 0);
+$camera = id(new Camera())
+  ->setPosition(new Vector(10, 30, -100))
+  ->setLookAt(new Vector(0, 10, 0));
 
-    $this->angle = 30 / 180 * M_PI;
-  }
+$light = id(new DefaultLight())
+  ->setPosition(new Vector(100, 100, -100));
 
-  public function getDirection() {
-    return $this->direction;
-  }
+$sphere = id(new Sphere())
+  ->setPosition(new Vector(0, 0, 0))
+  ->setRadius(10)
+  ->setColor(Color::$red);
 
-  public function getAngle() {
-    return $this->angle;
-  }
+$sphere2 = id(new Sphere())
+  ->setPosition(new Vector(0, 18, 0))
+  ->setRadius(10)
+  ->setColor(Color::$green);
 
-  public function getRight() {
-    return $this->right;
-  }
+$plane = id(new Plane())
+  ->setPosition(new Vector(0, -10, 0))
+  ->setNormal(new Vector(0, 1, 0))
+  ->setColor(Color::$blue);
 
-  public function getUp() {
-    return $this->up;
-  }
+$renderer = new DiffuseRenderer();
 
-  public function setPosition(Vector $v) {
-    $this->position = $v;
-    return $this;
-  }
+$world = id(new World())
+  ->setCamera($camera)
+  ->addObject($sphere)
+  ->addObject($sphere2)
+  ->addObject($plane)
+  ->addLight($light)
+  ->setRenderer($renderer);
 
-  public function getPosition() {
-    return $this->position;
-  }
-
-  public function setLookAt(Vector $v) {
-    // Compute direction (<look at> - <position>)
-    $this->direction = clone $v;
-    $this->direction->V_sub($this->position);
-
-    my_assert(!$this->direction->isNull(), 'look at == position');
-
-    // Normalize
-    $this->direction->normalize();
-
-    // Compute <right>
-    $this->right = clone $this->up;
-    $this->right->V_cross($this->direction);
-
-    // Compute the real <up>
-    $this->up = clone $this->direction;
-    $this->up->V_cross($this->right);
-
-    return $this;
-  }
-}
+$world->render('images/sample_01', 400, 225);

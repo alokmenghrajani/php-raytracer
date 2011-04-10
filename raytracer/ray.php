@@ -31,23 +31,6 @@ class Ray {
   protected $origin;
   protected $direction;
 
-  protected $distance = null;
-  protected $color;
-
-  public function __construct() {
-    $this->color = Color::$black;
-  }
-
-  public function setIntersect($distance, Color $c) {
-    if ($distance < 0) {
-      return;
-    }
-    if ($this->distance === null || ($this->distance > $distance)) {
-      $this->distance = $distance;
-      $this->color = $c;
-    }
-  }
-
   public function setOrigin(Vector $v) {
     $this->origin = $v;
     return $this;
@@ -66,13 +49,5 @@ class Ray {
 
   public function getDirection() {
     return $this->direction;
-  }
-
-  public function getColor() {
-    return $this->color;
-  }
-
-  public function getDistance() {
-    return $this->distance;
   }
 }

@@ -53,7 +53,7 @@ class DiffuseRenderer extends Renderer {
         $ray->setOrigin($camera->getPosition());
         $ray->setDirection($r);
 
-        // Calculate color of way
+        // Calculate color of ray
         foreach ($world->getObjects() as $obj) {
           $obj->intersect($ray, $world, 1);
         }

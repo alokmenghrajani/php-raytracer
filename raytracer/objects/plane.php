@@ -36,28 +36,34 @@ class Plane extends Object {
     return $this;
   }
 
-  public function intersect(Ray $ray, World $world, $iteration) {
+  public function intersect(Ray $ray, $compute_point, $compute_normal) {
     $d = -$this->position->V_dot($this->normal);
     $denom = $this->normal->V_dot($ray->getDirection());
     if ($denom == 0) {
-      return;
+      return null;
     }
     $num = -$d - $this->normal->V_dot($ray->getOrigin());
     $t = $num / $denom;
 
     if ($t < 0) {
-      return;
+      return null;
     }
 
-    // Check if this pixel has light
-    if ($iteration == 2) {
-      return;
+    $r = array('d' => $t);
+
+    if ($compute_point || $compute_normal) {
+      $t2 = clone $ray->getDirection();
+      $t2->K_mul($t);
+      $t2->V_add($ray->getOrigin());
+
+      $r['p'] = $t2;
+
+      $r['n'] = $this->normal;
     }
+    return $r;
+  }
 
-    $t2 = clone $ray->getDirection();
-    $t2->K_mul($t);
-    $t2->V_add($ray->getOrigin());
-
+/*
     $new_ray = new Ray();
     $new_ray->setOrigin($t2);
     foreach ($world->getLights() as $light) {
@@ -88,4 +94,6 @@ class Plane extends Object {
 //    $ray->setIntersect($t, $c->K_mul($intensity * $shading));
     $ray->setIntersect($t, $c->K_mul($shading));
   }
+*/
+
 }

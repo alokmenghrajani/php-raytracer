@@ -29,6 +29,7 @@
 
 /**
  * A simple world, with 2 spheres and a plane.
+ * Rendered using simple rendering.
  */
 
 include_once('raytracer/includes.php');
@@ -40,22 +41,22 @@ $camera = id(new Camera())
 $light = id(new DefaultLight())
   ->setPosition(new Vector(100, 100, -100));
 
-$sphere = id(new Sphere())
+$sphere = id(new Sphere('red sphere'))
   ->setPosition(new Vector(0, 0, 0))
   ->setRadius(10)
   ->setColor(Color::$red);
 
-$sphere2 = id(new Sphere())
+$sphere2 = id(new Sphere('green sphere'))
   ->setPosition(new Vector(0, 18, 0))
   ->setRadius(10)
   ->setColor(Color::$green);
 
-$plane = id(new Plane())
+$plane = id(new Plane('floor'))
   ->setPosition(new Vector(0, -10, 0))
   ->setNormal(new Vector(0, 1, 0))
   ->setColor(Color::$blue);
 
-$renderer = new DiffuseRenderer();
+$renderer = new SimpleRenderer();
 
 $world = id(new World())
   ->setCamera($camera)

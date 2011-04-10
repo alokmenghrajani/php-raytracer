@@ -28,12 +28,18 @@
  */
 
 abstract class Object {
+  protected $name;
   protected $position;
   protected $color;
 
-  public function __construct() {
+  public function __construct($name) {
+    $this->name = $name;
     $this->position = new Vector(0, 0, 0);
     $this->color = Color::$white;
+  }
+
+  public function getName() {
+    return $this->name;
   }
 
   public function setPosition(Vector $v) {
@@ -54,5 +60,15 @@ abstract class Object {
     return $this->color;
   }
 
-  abstract function intersect(Ray $r, World $w, $iter);
+  /**
+   * Calculates intersection between the Ray $r and this object.
+   *
+   * Returns null if the ray does not intersect the object. If it
+   * does, we return an array(
+   * 'd' => distance from ray's origin,
+   * 'p' => point of intersection (if $compute_point is true),
+   * 'n' => normal vector (if $compute_normal is true)
+   * ).
+   */
+  abstract function intersect(Ray $r, $compute_point, $compute_normal);
 }

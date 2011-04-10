@@ -27,20 +27,22 @@
  * or implied, of the author.
  */
 
-abstract class Light extends Object {
+abstract class Light {
+  protected $position;
   protected $color;
 
   public function __construct() {
-    parent::__construct();
+    $this->position = new Vector(0, 0, 0);
     $this->color = Color::$white;
+  }
+
+  public function setPosition(Vector $v) {
+    $this->position = $v;
+    return $this;
   }
 
   public function setColor(Color $color) {
     $this->color = $color;
     return $this;
-  }
-
-  public function intersect(Ray $r, World $w, $iter) {
-    my_assert(false);
   }
 }
