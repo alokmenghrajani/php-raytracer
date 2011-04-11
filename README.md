@@ -44,6 +44,3 @@ php sample_01.php
 
 and then open images/sample_01.bmp in your favourite image viewer.
 
-<script>
-document.write('hi');
-</script>
