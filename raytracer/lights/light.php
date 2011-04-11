@@ -27,33 +27,9 @@
  * or implied, of the author.
  */
 
-// Math stuff
-include_once('vector.php');
+/**
+ * I'm still unclear on how to implement lights. This will do for now...
+ */
+abstract class Light {
 
-// Core stuff
-include_once('utils.php');
-include_once('world.php');
-include_once('objects/object.php');
-include_once('camera.php');
-include_once('color.php');
-include_once('ray.php');
-
-// Encoders
-include_once('encoders/encoder.php');
-include_once('encoders/gd_encoder.php');
-include_once('encoders/bmp_encoder.php');
-
-// Renderer
-include_once('renderers/renderer.php');
-include_once('renderers/simple_renderer.php');
-include_once('renderers/flat_renderer.php');
-include_once('renderers/diffuse_renderer.php');
-include_once('renderers/phong_renderer.php');
-
-// Lights
-include_once('lights/light.php');
-include_once('lights/point_light.php');
-
-// Objects
-include_once('objects/sphere.php');
-include_once('objects/plane.php');
+}

@@ -54,6 +54,11 @@ class Vector {
     $this->K_div($this->length());
   }
 
+  public function assertNormalized() {
+    $l = $this->length();
+    assert(($l >= 0.99) && ($l <= 1.01));
+  }
+
   public function neg() {
     $this->x = -$this->x;
     $this->y = -$this->y;

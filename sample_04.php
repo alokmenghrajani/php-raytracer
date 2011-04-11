@@ -27,33 +27,43 @@
  * or implied, of the author.
  */
 
-// Math stuff
-include_once('vector.php');
+/**
+ * A simple world, with 2 spheres and a plane.
+ * Rendered using diffuse rendering.
+ */
 
-// Core stuff
-include_once('utils.php');
-include_once('world.php');
-include_once('objects/object.php');
-include_once('camera.php');
-include_once('color.php');
-include_once('ray.php');
+include_once('raytracer/includes.php');
 
-// Encoders
-include_once('encoders/encoder.php');
-include_once('encoders/gd_encoder.php');
-include_once('encoders/bmp_encoder.php');
+$camera = id(new Camera())
+  ->setPosition(new Vector(10, 30, -100))
+  ->setLookAt(new Vector(0, 10, 0));
 
-// Renderer
-include_once('renderers/renderer.php');
-include_once('renderers/simple_renderer.php');
-include_once('renderers/flat_renderer.php');
-include_once('renderers/diffuse_renderer.php');
-include_once('renderers/phong_renderer.php');
+$light = id(new PointLight())
+  ->setPosition(new Vector(100, 100, -100));
 
-// Lights
-include_once('lights/light.php');
-include_once('lights/point_light.php');
+$sphere = id(new Sphere('red sphere'))
+  ->setPosition(new Vector(0, 0, 0))
+  ->setRadius(10)
+  ->setColor(Color::$red);
 
-// Objects
-include_once('objects/sphere.php');
-include_once('objects/plane.php');
+$sphere2 = id(new Sphere('green sphere'))
+  ->setPosition(new Vector(0, 18, 0))
+  ->setRadius(10)
+  ->setColor(Color::$green);
+
+$plane = id(new Plane('floor'))
+  ->setPosition(new Vector(0, -10, 0))
+  ->setNormal(new Vector(0, 1, 0))
+  ->setColor(Color::$blue);
+
+$renderer = new PhongRenderer();
+
+$world = id(new World())
+  ->setCamera($camera)
+  ->addObject($sphere)
+  ->addObject($sphere2)
+  ->addObject($plane)
+  ->addLight($light)
+  ->setRenderer($renderer);
+
+$world->render('images/sample_04', 400, 225);

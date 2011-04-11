@@ -28,11 +28,11 @@
  */
 
 /**
- * Diffuse rendering involves looking at the angle between a ray and the surface's normal to calculate
- * the amount of color to render.
+ * Phong (specular) rendering involves looking at the angle between the ray and the light.
+ * This makes objects look shiny.
  */
 
-class DiffuseRenderer extends Renderer {
+class PhongRenderer extends Renderer {
   function render(World $world, Encoder $img, $width, $height) {
     $camera = $world->getCamera();
 
@@ -97,9 +97,20 @@ class DiffuseRenderer extends Renderer {
             }
 
             if ($hits_light) {
-              $shading = max($d->V_dot($r['n']) / $d->length(), 0);
+              $diffuse_shading = max($d->V_dot($r['n']) / $d->length(), 0);
+
+              $reflected_ray = clone $ray->getDirection();
+              $reflected_ray->neg();
+              $t = clone($r['n']);
+              $t->K_mul(-2 * $reflected_ray->V_dot($t));
+              $reflected_ray->V_add($t);
+              $reflected_ray->assertNormalized();
+
+              $specular_shading = max(-$d->V_dot($reflected_ray) / $d->length(), 0);
+              $specular_shading = pow($specular_shading, 2);
+
               $c = clone $obj->getColor();
-              $color = $c->K_mul($shading);
+              $color = $c->K_mul(min(0.8 * $diffuse_shading + 0.4 * $specular_shading, 1));
             } else {
               $color = Color::$black;
             }
