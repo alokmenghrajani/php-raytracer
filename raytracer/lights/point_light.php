@@ -27,13 +27,15 @@
  * or implied, of the author.
  */
 
-abstract class Light {
+/**
+ * A point light is a light which is located at given point and shines in all directions
+ * with infinite power. This results in hard shadows.
+ */
+class PointLight extends Light {
   protected $position;
-  protected $color;
 
   public function __construct() {
     $this->position = new Vector(0, 0, 0);
-    $this->color = Color::$white;
   }
 
   public function setPosition(Vector $v) {
@@ -43,10 +45,5 @@ abstract class Light {
 
   public function getPosition() {
     return $this->position;
-  }
-
-  public function setColor(Color $color) {
-    $this->color = $color;
-    return $this;
   }
 }

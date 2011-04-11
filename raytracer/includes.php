@@ -36,7 +36,6 @@ include_once('world.php');
 include_once('objects/object.php');
 include_once('camera.php');
 include_once('color.php');
-include_once('abstract_light.php');
 include_once('ray.php');
 
 // Encoders
@@ -51,7 +50,8 @@ include_once('renderers/flat_renderer.php');
 include_once('renderers/diffuse_renderer.php');
 
 // Lights
-include_once('default_light.php');
+include_once('lights/light.php');
+include_once('lights/point_light.php');
 
 // Objects
 include_once('objects/sphere.php');

@@ -38,7 +38,7 @@ $camera = id(new Camera())
   ->setPosition(new Vector(10, 30, -100))
   ->setLookAt(new Vector(0, 10, 0));
 
-$light = id(new DefaultLight())
+$light = id(new PointLight())
   ->setPosition(new Vector(100, 100, -100));
 
 $sphere = id(new Sphere('red sphere'))
