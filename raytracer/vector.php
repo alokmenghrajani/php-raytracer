@@ -32,10 +32,16 @@ class Vector {
   public $y;
   public $z;
 
-  public function __construct($x, $y, $z) { // php bug ?
+  public function __construct($x, $y, $z) {
     $this->x = (float)$x;
     $this->y = (float)$y;
     $this->z = (float)$z;
+  }
+
+  public static function fromAtoB(Vector $a, Vector $b) {
+    $r = clone $b;
+    $r->V_sub($a);
+    return $r;
   }
 
   public function equals(Vector $v2) {
@@ -118,5 +124,24 @@ class Vector {
     return (($this->x == 0) &&
             ($this->y == 0) &&
             ($this->z == 0));
+  }
+
+  /**
+   * Given an incident vector and normal vector, a reflected
+   * vector is returned.
+   *
+   * The usual formula is:
+   * r = i - 2 * i.n * n
+   */
+  public static function reflectedRay(Vector $i, Vector $n) {
+    $i->assertNormalized();
+    $n->assertNormalized();
+
+    $r = clone $i;
+    $t = clone $n;
+    $t->K_mul(-2 * $r->V_dot($t));
+    $r->V_add($t);
+    $r->assertNormalized();
+    return $r;
   }
 }

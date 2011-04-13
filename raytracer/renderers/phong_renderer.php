@@ -72,13 +72,11 @@ class PhongRenderer extends Renderer {
             $new_ray = new Ray();
             $new_ray->setOrigin($r['p']);
 
-            $d = null;
             $hits_light = false;
             foreach ($world->getLights() as $light) {
-              $d = clone $new_ray->getOrigin();
-              $d->neg();
-              $d->V_add($light->getPosition());
-              $new_ray->setDirection($d);
+              $new_ray->setDirection(Vector::fromAtoB(
+                $new_ray->getOrigin(),
+                $light->getPosition()));
 
               // Check if this ray hits anything
               $hits_light = true;
@@ -97,20 +95,17 @@ class PhongRenderer extends Renderer {
             }
 
             if ($hits_light) {
-              $diffuse_shading = max($d->V_dot($r['n']) / $d->length(), 0);
+              $diffuse_shading = max($new_ray->getDirection()->V_dot($r['n']), 0);
 
-              $reflected_ray = clone $ray->getDirection();
-              $reflected_ray->neg();
-              $t = clone($r['n']);
-              $t->K_mul(-2 * $reflected_ray->V_dot($t));
-              $reflected_ray->V_add($t);
-              $reflected_ray->assertNormalized();
+              $reflected_ray = Vector::reflectedRay(
+                $ray->getDirection(),
+                $r['n']);
 
-              $specular_shading = max(-$d->V_dot($reflected_ray) / $d->length(), 0);
-              $specular_shading = pow($specular_shading, 2);
+              $specular_shading = max($new_ray->getDirection()->V_dot($r['n']), 0);
+              $specular_shading = pow($specular_shading, 16);
 
               $c = clone $obj->getColor();
-              $color = $c->K_mul(min(0.8 * $diffuse_shading + 0.4 * $specular_shading, 1));
+              $color = $c->K_mul(min(0.7 * $diffuse_shading + 0.3 * $specular_shading, 1));
             } else {
               $color = Color::$black;
             }
