@@ -72,13 +72,11 @@ class DiffuseRenderer extends Renderer {
             $new_ray = new Ray();
             $new_ray->setOrigin($r['p']);
 
-            $d = null;
             $hits_light = false;
             foreach ($world->getLights() as $light) {
-              $d = clone $new_ray->getOrigin();
-              $d->neg();
-              $d->V_add($light->getPosition());
-              $new_ray->setDirection($d);
+              $new_ray->setDirection(Vector::fromAtoB(
+                $new_ray->getOrigin(),
+                $light->getPosition()));
 
               // Check if this ray hits anything
               $hits_light = true;
@@ -97,7 +95,7 @@ class DiffuseRenderer extends Renderer {
             }
 
             if ($hits_light) {
-              $shading = max($d->V_dot($r['n']) / $d->length(), 0);
+              $shading = max($new_ray->getDirection()->V_dot($r['n']), 0);
               $c = clone $obj->getColor();
               $color = $c->K_mul($shading);
             } else {
