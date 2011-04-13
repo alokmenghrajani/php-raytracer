@@ -37,12 +37,12 @@ class Plane extends Object {
   }
 
   public function intersect(Ray $ray, $compute_point, $compute_normal) {
-    $d = -$this->position->V_dot($this->normal);
-    $denom = $this->normal->V_dot($ray->getDirection());
+    $d = -Vector::dot($this->position, $this->normal);
+    $denom = Vector::dot($this->normal, $ray->getDirection());
     if ($denom == 0) {
       return null;
     }
-    $num = -$d - $this->normal->V_dot($ray->getOrigin());
+    $num = -$d - Vector::dot($this->normal, $ray->getOrigin());
     $t = $num / $denom;
 
     if ($t < 0) {

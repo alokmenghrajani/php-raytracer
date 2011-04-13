@@ -95,13 +95,13 @@ class PhongRenderer extends Renderer {
             }
 
             if ($hits_light) {
-              $diffuse_shading = max($new_ray->getDirection()->V_dot($r['n']), 0);
+              $diffuse_shading = max(Vector::dot($new_ray->getDirection(), $r['n']), 0);
 
               $reflected_ray = Vector::reflectedRay(
                 $ray->getDirection(),
                 $r['n']);
 
-              $specular_shading = max($new_ray->getDirection()->V_dot($r['n']), 0);
+              $specular_shading = max(Vector::dot($new_ray->getDirection(), $r['n']), 0);
               $specular_shading = pow($specular_shading, 16);
 
               $c = clone $obj->getColor();

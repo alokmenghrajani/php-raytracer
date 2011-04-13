@@ -35,8 +35,8 @@ class Sphere extends Object {
     $dst = clone $ray->getOrigin();
     $dst->V_sub($this->position);
 
-    $b = $dst->V_dot($ray->getDirection());
-    $c = $dst->V_dot($dst) - $this->radius * $this->radius;
+    $b = Vector::dot($dst, $ray->getDirection());
+    $c = Vector::dot($dst, $dst) - $this->radius * $this->radius;
     $d = $b * $b - $c;
     if ($d < 0) {
       return null;

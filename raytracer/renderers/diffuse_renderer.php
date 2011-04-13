@@ -95,7 +95,7 @@ class DiffuseRenderer extends Renderer {
             }
 
             if ($hits_light) {
-              $shading = max($new_ray->getDirection()->V_dot($r['n']), 0);
+              $shading = max(Vector::dot($new_ray->getDirection(), $r['n']), 0);
               $c = clone $obj->getColor();
               $color = $c->K_mul($shading);
             } else {

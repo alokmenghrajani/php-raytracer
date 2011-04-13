@@ -87,8 +87,15 @@ class Vector {
     return $this;
   }
 
-  public function V_dot(Vector $v2) {
-    return ($this->x * $v2->x + $this->y * $v2->y + $this->z * $v2->z);
+  /**
+   * Returns the dot product of two vectors. This is
+   * also cos(alpha) * ||v1|| * ||v2||, where
+   * alpha is the angle between v1 and v2.
+   *
+   * @return float
+   */
+  public static function dot(Vector $v1, Vector $v2) {
+    return ($v1->x * $v2->x + $v1->y * $v2->y + $v1->z * $v2->z);
   }
 
   public function V_cross(Vector $v2) {
@@ -139,7 +146,7 @@ class Vector {
 
     $r = clone $i;
     $t = clone $n;
-    $t->K_mul(-2 * $r->V_dot($t));
+    $t->K_mul(-2 * Vector::dot($r, $t));
     $r->V_add($t);
     $r->assertNormalized();
     return $r;
