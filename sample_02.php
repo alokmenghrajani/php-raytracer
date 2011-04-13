@@ -29,7 +29,7 @@
 
 /**
  * A simple world, with 2 spheres and a plane.
- * Rendered using flat rendering.
+ * Rendered using simple rendering and anti aliasing.
  */
 
 include_once('raytracer/includes.php');
@@ -56,7 +56,8 @@ $plane = id(new Plane('floor'))
   ->setNormal(new Vector(0, 1, 0))
   ->setColor(Color::$blue);
 
-$renderer = new FlatRenderer();
+$renderer = id(new SimpleRenderer())
+  ->setAntiAlias(true);
 
 $world = id(new World())
   ->setCamera($camera)

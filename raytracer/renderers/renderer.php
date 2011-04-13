@@ -28,5 +28,49 @@
  */
 
 abstract class Renderer {
-  abstract function render(World $world, Encoder $img, $width, $height);
+  protected $anti_alias;
+
+  public function setAntiAlias($bool) {
+    $this->anti_alias = $bool;
+    return $this;
+  }
+
+  function render(World $world, Encoder $img, $width, $height) {
+    $camera = $world->getCamera();
+
+    $camera_z = clone $camera->getDirection();
+    $camera_z->K_mul($width / 2 / tan($camera->getAngle()));
+
+    // Cast rays, ($i, $j) is screen coordinates
+    for ($j = 0; $j < $height; $j++) {
+      for ($i = 0; $i < $width; $i++) {
+        // Rays start at <camera> and go to
+        // (d * <direction>) + (i - width/2) * <right>) + (+height/2 - j) * up
+        $r = clone $camera_z;
+
+        $new_i = $i;
+        $new_j = $j;
+        if ($this->anti_alias) {
+          $new_i += mt_rand() / mt_getrandmax();
+          $new_j += mt_rand() / mt_getrandmax();
+        }
+
+        $t = clone $camera->getRight();
+        $t->K_mul($new_i - $width / 2);
+        $r->V_add($t);
+
+        $t = clone $camera->getUp();
+        $t->K_mul($height / 2 - $new_j);
+        $r->V_add($t);
+
+        $ray = new Ray();
+        $ray->setOrigin($camera->getPosition());
+        $ray->setDirection($r);
+
+        $this->render_ray($world, $img, $i, $j, $ray);
+      }
+    }
+  }
+
+  abstract function render_ray(World $world, Encoder $img, $i, $j, Ray $ray);
 }

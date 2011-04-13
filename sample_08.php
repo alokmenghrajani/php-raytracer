@@ -29,7 +29,7 @@
 
 /**
  * A simple world, with 2 spheres and a plane.
- * Rendered using flat rendering and anti aliasing.
+ * Rendered using Phong rendering and anti aliasing.
  */
 
 include_once('raytracer/includes.php');
@@ -56,7 +56,7 @@ $plane = id(new Plane('floor'))
   ->setNormal(new Vector(0, 1, 0))
   ->setColor(Color::$blue);
 
-$renderer = id(new FlatRenderer())
+$renderer = id(new PhongRenderer())
   ->setAntiAlias(true);
 
 $world = id(new World())
@@ -67,4 +67,4 @@ $world = id(new World())
   ->addLight($light)
   ->setRenderer($renderer);
 
-$world->render('images/sample_04', 400, 225);
+$world->render('images/sample_08', 400, 225);

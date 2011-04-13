@@ -33,86 +33,60 @@
  */
 
 class PhongRenderer extends Renderer {
-  function render(World $world, Encoder $img, $width, $height) {
-    $camera = $world->getCamera();
+  function render_ray(World $world, Encoder $img, $i, $j, Ray $ray) {
+    // Calculate which object this ray touches
+    $distance = null;
+    $color = Color::$black;
+    foreach ($world->getObjects() as $obj) {
+      $r = $obj->intersect($ray, true, true);
+      if ($r === null) {
+        continue;
+      }
+      if (($distance === null) || ($r['d'] < $distance)) {
+        $distance = $r['d'];
+        // Cast a ray from $r['p'] to the light sources
+        $new_ray = new Ray();
+        $new_ray->setOrigin($r['p']);
 
-    $camera_z = clone $camera->getDirection();
-    $camera_z->K_mul($width / 2 / tan($camera->getAngle()));
+        $hits_light = false;
+        foreach ($world->getLights() as $light) {
+          $new_ray->setDirection(Vector::fromAtoB(
+            $new_ray->getOrigin(),
+            $light->getPosition()));
 
-    // Cast rays, ($i, $j) is screen coordinates
-    for ($j = 0; $j < $height; $j++) {
-      for ($i = 0; $i < $width; $i++) {
-        // Rays start at <camera> and go to
-        // (d * <direction>) + (i - width/2) * <right>) + (+height/2 - j) * up
-        $r = clone $camera_z;
-
-        $t = clone $camera->getRight();
-        $t->K_mul($i - $width / 2);
-        $r->V_add($t);
-
-        $t = clone $camera->getUp();
-        $t->K_mul($height / 2 - $j);
-        $r->V_add($t);
-
-        $ray = new Ray();
-        $ray->setOrigin($camera->getPosition());
-        $ray->setDirection($r);
-
-        // Calculate which object this ray touches
-        $distance = null;
-        $color = Color::$black;
-        foreach ($world->getObjects() as $obj) {
-          $r = $obj->intersect($ray, true, true);
-          if ($r === null) {
-            continue;
+          // Check if this ray hits anything
+          $hits_light = true;
+          foreach ($world->getObjects() as $obj2) {
+            if ($obj2 === $obj) {
+              continue;
+            }
+            if ($obj2->intersect($new_ray, false, false) !== null) {
+              $hits_light = false;
+              break;
+            }
           }
-          if (($distance === null) || ($r['d'] < $distance)) {
-            $distance = $r['d'];
-            // Cast a ray from $r['p'] to the light sources
-            $new_ray = new Ray();
-            $new_ray->setOrigin($r['p']);
-
-            $hits_light = false;
-            foreach ($world->getLights() as $light) {
-              $new_ray->setDirection(Vector::fromAtoB(
-                $new_ray->getOrigin(),
-                $light->getPosition()));
-
-              // Check if this ray hits anything
-              $hits_light = true;
-              foreach ($world->getObjects() as $obj2) {
-                if ($obj2 === $obj) {
-                  continue;
-                }
-                if ($obj2->intersect($new_ray, false, false) !== null) {
-                  $hits_light = false;
-                  break;
-                }
-              }
-              if ($hits_light) {
-                break;
-              }
-            }
-
-            if ($hits_light) {
-              $diffuse_shading = max(Vector::dot($new_ray->getDirection(), $r['n']), 0);
-
-              $reflected_ray = Vector::reflectedRay(
-                $ray->getDirection(),
-                $r['n']);
-
-              $specular_shading = max(Vector::dot($new_ray->getDirection(), $r['n']), 0);
-              $specular_shading = pow($specular_shading, 16);
-
-              $c = clone $obj->getColor();
-              $color = $c->K_mul(min(0.7 * $diffuse_shading + 0.3 * $specular_shading, 1));
-            } else {
-              $color = Color::$black;
-            }
+          if ($hits_light) {
+            break;
           }
         }
-        $img->setPixel($i, $j, $color);
+
+        if ($hits_light) {
+          $diffuse_shading = max(Vector::dot($new_ray->getDirection(), $r['n']), 0);
+
+          $reflected_ray = Vector::reflectedRay(
+            $ray->getDirection(),
+            $r['n']);
+
+          $specular_shading = max(Vector::dot($new_ray->getDirection(), $r['n']), 0);
+          $specular_shading = pow($specular_shading, 16);
+
+          $c = clone $obj->getColor();
+          $color = $c->K_mul(min(0.7 * $diffuse_shading + 0.3 * $specular_shading, 1));
+        } else {
+          $color = Color::$black;
+        }
       }
     }
+    $img->setPixel($i, $j, $color);
   }
 }
