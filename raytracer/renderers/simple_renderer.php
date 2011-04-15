@@ -34,20 +34,13 @@
  */
 
 class SimpleRenderer extends Renderer {
-  function render_ray(World $world, Encoder $img, $i, $j, Ray $ray) {
-    // Calculate which object this ray touches
-    $distance = null;
-    $color = Color::$black;
-    foreach ($world->getObjects() as $obj) {
-      $r = $obj->intersect($ray, false, false);
-      if ($r === null) {
-        continue;
-      }
-      if (($distance === null) || ($r['d'] < $distance)) {
-        $distance = $r['d'];
-        $color = $obj->getColor();
-      }
+  protected function render_ray(World $world, Encoder $img, $i, $j, Ray $ray) {
+    $r = $this->rayIntersection($world, $ray, false, false);
+    if (!$r) {
+      // ray does not intersect any object
+      return;
     }
-    $img->setPixel($i, $j, $color);
+
+    $img->setPixel($i, $j, $r['o']->getColor());
   }
 }

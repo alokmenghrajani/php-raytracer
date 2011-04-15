@@ -35,6 +35,57 @@ abstract class Renderer {
     return $this;
   }
 
+  /**
+   *  Find the closest object in $world that $ray intersects.
+   *
+   *  Returns an array(
+   *    'o' => object which intersected
+   *    'd' => distance
+   *    'p' => point of intersection
+   *    'n' => normal vector
+   *  );
+   *
+   *  or null if the ray does not intersect anything.
+   */
+  protected function rayIntersection(World $world, Ray $ray, $compute_point, $compute_normal) {
+    $result = null;
+    foreach ($world->getObjects() as $obj) {
+      $t = $obj->intersect($ray, $compute_point, $compute_normal);
+      if ($t === null) {
+        continue;
+      }
+      if (!$result || ($t['d'] < $result['d'])) {
+        $result = $t;
+        $result['o'] = $obj;
+      }
+    }
+    return $result;
+  }
+
+  protected function pointLight(World $world, Vector $point, Object $ignore) {
+    $ray = new Ray();
+    $ray->setOrigin($point);
+    foreach ($world->getLights() as $light) {
+      $ray->setDirection(Vector::fromAtoB(
+        $point,
+        $light->getPosition()));
+      $hits_light = false;
+      foreach ($world->getObjects() as $obj) {
+        if ($obj === $ignore) {
+          continue;
+        }
+        if ($obj->intersect($ray, false, false) !== null) {
+          $hits_light = true;
+          break;
+        }
+      }
+      if (!$hits_light) {
+        return $ray;
+      }
+    }
+    return null;
+  }
+
   function render(World $world, Encoder $img, $width, $height) {
     $camera = $world->getCamera();
 
@@ -72,5 +123,5 @@ abstract class Renderer {
     }
   }
 
-  abstract function render_ray(World $world, Encoder $img, $i, $j, Ray $ray);
+  abstract protected function render_ray(World $world, Encoder $img, $i, $j, Ray $ray);
 }

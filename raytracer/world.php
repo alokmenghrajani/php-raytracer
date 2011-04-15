@@ -27,8 +27,6 @@
  * or implied, of the author.
  */
 
-ini_set('memory_limit', '2000M');
-
 /**
  * The World object. This object is a basically a container. It doesn't
  * do much, beside tie everything together.
@@ -44,6 +42,12 @@ class World {
   protected $lights = array();
   protected $objects = array();
   protected $renderer = null;
+
+  public function __construct() {
+    ini_set('memory_limit', '2000M');
+    // So that each run returns the exact same image
+    mt_srand(0);
+  }
 
   // Sets the camera for the world. Each world should
   // have exactly one camera before rendering can happen

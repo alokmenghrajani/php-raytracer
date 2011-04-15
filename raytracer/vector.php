@@ -140,7 +140,7 @@ class Vector {
    * The usual formula is:
    * r = i - 2 * i.n * n
    */
-  public static function reflectedRay(Vector $i, Vector $n) {
+  public static function reflectedVector(Vector $i, Vector $n) {
     $i->assertNormalized();
     $n->assertNormalized();
 

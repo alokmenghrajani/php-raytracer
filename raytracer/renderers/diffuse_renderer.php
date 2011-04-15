@@ -33,52 +33,24 @@
  */
 
 class DiffuseRenderer extends Renderer {
-  function render_ray(World $world, Encoder $img, $i, $j, Ray $ray) {
-    // Calculate which object this ray touches
-    $distance = null;
-    $color = Color::$black;
-    foreach ($world->getObjects() as $obj) {
-      $r = $obj->intersect($ray, true, true);
-      if ($r === null) {
-        continue;
-      }
-      if (($distance === null) || ($r['d'] < $distance)) {
-        $distance = $r['d'];
-        // Cast a ray from $r['p'] to the light sources
-        $new_ray = new Ray();
-        $new_ray->setOrigin($r['p']);
-
-        $hits_light = false;
-        foreach ($world->getLights() as $light) {
-          $new_ray->setDirection(Vector::fromAtoB(
-            $new_ray->getOrigin(),
-            $light->getPosition()));
-
-          // Check if this ray hits anything
-          $hits_light = true;
-          foreach ($world->getObjects() as $obj2) {
-            if ($obj2 === $obj) {
-              continue;
-            }
-            if ($obj2->intersect($new_ray, false, false) !== null) {
-              $hits_light = false;
-              break;
-            }
-          }
-          if ($hits_light) {
-            break;
-          }
-        }
-
-        if ($hits_light) {
-          $shading = max(Vector::dot($new_ray->getDirection(), $r['n']), 0);
-          $c = clone $obj->getColor();
-          $color = $c->K_mul($shading);
-        } else {
-          $color = Color::$black;
-        }
-      }
+  protected function render_ray(World $world, Encoder $img, $i, $j, Ray $ray) {
+    $r = $this->rayIntersection($world, $ray, true, true);
+    if (!$r) {
+      // ray does not intersect any object
+      return;
     }
-    $img->setPixel($i, $j, $color);
+
+    $light_ray = $this->pointLight($world, $r['p'], $r['o']);
+    if (!$light_ray) {
+      // point is not exposed to any light sources
+      return;
+    }
+
+    // Calculate pixel's color
+    $shading = max(Vector::dot($light_ray->getDirection(), $r['n']), 0);
+    $c = clone ($r['o']->getColor());
+    $c->K_mul($shading);
+
+    $img->setPixel($i, $j, $c);
   }
 }
