@@ -34,13 +34,13 @@
  */
 
 class SimpleRenderer extends Renderer {
-  protected function render_ray(World $world, Encoder $img, $i, $j, Ray $ray) {
+  protected function render_ray(World $world, Ray $ray, $ignore, $recursion) {
     $r = $this->rayIntersection($world, $ray, false, false);
     if (!$r) {
       // ray does not intersect any object
       return;
     }
 
-    $img->setPixel($i, $j, $r['o']->getColor());
+    return $r['o']->getColor();
   }
 }

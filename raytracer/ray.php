@@ -50,4 +50,15 @@ class Ray {
   public function getDirection() {
     return $this->direction;
   }
+
+  public static function reflectedRay(Ray $i, Vector $n, Vector $p) {
+    $r = new Ray();
+    $r->origin = $p;
+    $r->direction = Vector::reflectedVector($i->getDirection(), $n);
+    return $r;
+  }
+
+  public static function dot(Ray $r1, Ray $r2) {
+    return Vector::dot($r1->getDirection(), $r2->getDirection());
+  }
 }

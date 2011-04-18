@@ -33,7 +33,7 @@
  */
 
 class DiffuseRenderer extends Renderer {
-  protected function render_ray(World $world, Encoder $img, $i, $j, Ray $ray) {
+  protected function render_ray(World $world, Ray $ray, $ignore, $recursion) {
     $r = $this->rayIntersection($world, $ray, true, true);
     if (!$r) {
       // ray does not intersect any object
@@ -51,6 +51,6 @@ class DiffuseRenderer extends Renderer {
     $c = clone ($r['o']->getColor());
     $c->K_mul($shading);
 
-    $img->setPixel($i, $j, $c);
+    return $c;
   }
 }

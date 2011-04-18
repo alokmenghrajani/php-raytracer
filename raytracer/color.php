@@ -47,6 +47,10 @@ class Color extends Vector {
            (($this->y * 255 & 0xff) << 8) |
            ($this->z * 255 & 0xff);
   }
+
+  public function __toString() {
+    return sprintf('%02x%02x%02x', $this->x * 255 & 0xff, $this->y * 255 & 0xff, $this->z * 255 & 0xff);
+  }
 }
 
 Color::$white = new Color(1, 1, 1);

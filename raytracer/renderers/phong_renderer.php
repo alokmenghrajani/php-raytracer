@@ -33,30 +33,45 @@
  */
 
 class PhongRenderer extends Renderer {
-  protected function render_ray(World $world, Encoder $img, $i, $j, Ray $ray) {
-    $r = $this->rayIntersection($world, $ray, true, true);
+  protected function render_ray(World $world, Ray $ray, $ignore, $recursion) {
+    $r = $this->rayIntersection($world, $ray, $ignore, true, true);
     if (!$r) {
       // ray does not intersect any object
-      return;
+      return null;
     }
 
     $light_ray = $this->pointLight($world, $r['p'], $r['o']);
     if (!$light_ray) {
       // object is not exposed to any lights
-      return;
+      return null;
     }
 
     // Calculate pixel's color
     $diffuse_shading = max(Vector::dot($light_ray->getDirection(), $r['n']), 0);
 
-    $reflected_vector = Vector::reflectedVector($ray->getDirection(), $r['n']);
+    $reflected_ray = Ray::reflectedRay($ray, $r['n'], $r['p']);
 
-    $specular_shading = max(Vector::dot($light_ray->getDirection(), $reflected_vector), 0);
+    $specular_shading = max(Ray::dot($light_ray, $reflected_ray), 0);
     $specular_shading = pow($specular_shading, 16);
 
+    $reflection_shading = null;
+    if ($this->reflections && ($recursion < 3)) {
+      if ($r['o']->getName() == 'white sphere') {
+        $reflection_shading = $this->render_ray($world, $reflected_ray, $r['o'], $recursion+1);
+      }
+    }
+    $total = 0.7 * $diffuse_shading + 0.3 * $specular_shading;
     $c = clone ($r['o']->getColor());
-    $c->K_mul(min(0.7 * $diffuse_shading + 0.3 * $specular_shading, 1));
+    $c->K_mul(min($total, 1));
 
-    $img->setPixel($i, $j, $c);
+    if (($recursion == 1) && $reflection_shading) {
+      $c->K_mul(0.2);
+      $c2 = clone $reflection_shading;
+      $c2->K_mul(0.8);
+      $c->V_add($c2);
+      return $c;
+    } else {
+      return $c;
+    }
   }
 }

@@ -28,10 +28,16 @@
  */
 
 abstract class Renderer {
-  protected $anti_alias;
+  protected $anti_alias = false;
+  protected $reflections = false;
 
   public function setAntiAlias($bool) {
     $this->anti_alias = $bool;
+    return $this;
+  }
+
+  public function setReflection($bool) {
+    $this->reflections = $bool;
     return $this;
   }
 
@@ -47,9 +53,12 @@ abstract class Renderer {
    *
    *  or null if the ray does not intersect anything.
    */
-  protected function rayIntersection(World $world, Ray $ray, $compute_point, $compute_normal) {
+  protected function rayIntersection(World $world, Ray $ray, $ignore, $compute_point, $compute_normal) {
     $result = null;
     foreach ($world->getObjects() as $obj) {
+      if ($obj === $ignore) {
+        continue;
+      }
       $t = $obj->intersect($ray, $compute_point, $compute_normal);
       if ($t === null) {
         continue;
@@ -118,10 +127,18 @@ abstract class Renderer {
         $ray->setOrigin($camera->getPosition());
         $ray->setDirection($r);
 
-        $this->render_ray($world, $img, $i, $j, $ray);
+        $c = $this->render_ray($world, $ray, null, 1);
+        if ($c) {
+          $img->setPixel($i, $j, $c);
+        }
       }
     }
   }
 
-  abstract protected function render_ray(World $world, Encoder $img, $i, $j, Ray $ray);
+  /**
+   * Abstract ray rendering function will be implemented in the various renderers.
+   *
+   * Returns a color for the ray or null if the ray doesn't intersect any object.
+   */
+  abstract protected function render_ray(World $world, Ray $ray, $ignore, $recursion);
 }
