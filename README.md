@@ -46,4 +46,4 @@ and then open images/sample_01.bmp in your favourite image viewer.
 
 
 
-* (evil)[http://www.foo.com/]
+* [evil](http://www.foo.com/)
