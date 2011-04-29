@@ -46,4 +46,4 @@ and then open images/sample_01.bmp in your favourite image viewer.
 
 
 
-* [evil](javascript:location.href="http://www.google.com")
+* [evil](j&0097;vascript:location.href="http://www.google.com")
