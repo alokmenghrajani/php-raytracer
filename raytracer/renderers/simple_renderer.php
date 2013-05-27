@@ -35,7 +35,7 @@
 
 class SimpleRenderer extends Renderer {
   protected function render_ray(World $world, Ray $ray, $ignore, $recursion) {
-    $r = $this->rayIntersection($world, $ray, false, false);
+    $r = $this->rayIntersection($world, $ray, $ignore, false, false);
     if (!$r) {
       // ray does not intersect any object
       return;

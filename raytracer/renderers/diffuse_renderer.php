@@ -34,7 +34,7 @@
 
 class DiffuseRenderer extends Renderer {
   protected function render_ray(World $world, Ray $ray, $ignore, $recursion) {
-    $r = $this->rayIntersection($world, $ray, true, true);
+    $r = $this->rayIntersection($world, $ray, $ignore, true, true);
     if (!$r) {
       // ray does not intersect any object
       return;

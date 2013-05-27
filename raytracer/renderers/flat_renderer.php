@@ -35,7 +35,7 @@
 
 class FlatRenderer extends Renderer {
   protected function render_ray(World $world, Ray $ray, $ignore, $recursion) {
-    $r = $this->rayIntersection($world, $ray, true, false);
+    $r = $this->rayIntersection($world, $ray, $ignore, true, false);
     if (!$r) {
       // ray does not intersect any object
       return;
