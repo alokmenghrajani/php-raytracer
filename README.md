@@ -38,11 +38,13 @@ Running the sample code
 
 For Linux or Mac OS:
 --------------------
+```bash
 git clone git://github.com/alokmenghrajani/php-raytracer.git
 cd php-raytracer
 php sample_01.php
+```
 
-and then open images/sample_01.bmp in your favourite image viewer.
+and then open `images/sample_01.bmp` in your favourite image viewer.
 
 
 
